@@ -137,28 +137,34 @@
     </div>
 
     <script>
-        // 1. BASE DE DADOS INTEGRADA
+// 1. BASE DE DADOS INTEGRADA COM 23 FONTES
         const baseDados = [
+            // MUNICÍPIOS
             { "nome": "Porto Grande", "lat": 0.7117, "lon": -51.4138, "masculino": 360576, "feminino": 20050, "gel": 13100 },
-            { "nome": "Ferreira Gomes", "lat": 0.8554, "lon": -51.1821, "masculino": 158720, "feminino": 9600, "gel": 8200 },
-            { "nome": "Laranjal do Jari", "lat": -0.8400, "lon": -52.5218, "masculino": 457336, "feminino": 20088, "gel": 10500 },
-            { "nome": "Santana", "lat": -0.0432, "lon": -51.1645, "masculino": 490000, "feminino": 21850, "gel": 15000 },
-            { "nome": "Vitória do Jari", "lat": -0.9262, "lon": -52.4231, "masculino": 252726, "feminino": 4400, "gel": 0 },
-            { "nome": "Calçoene", "lat": 2.5354, "lon": -50.9487, "masculino": 281364, "feminino": 6600, "gel": 0 },
-            { "nome": "Cutias do Araguari", "lat": 0.9717, "lon": -50.8008, "masculino": 104400, "feminino": 11096, "gel": 0 },
-            { "nome": "Pracuúba", "lat": 1.7432, "lon": -50.7847, "masculino": 96744, "feminino": 4180, "gel": 0 },
-            { "nome": "Tartarugalzinho", "lat": 1.5064, "lon": -50.9037, "masculino": 237600, "feminino": 6600, "gel": 0 },
-            { "nome": "Amapá", "lat": 2.0531, "lon": -50.7957, "masculino": 231264, "feminino": 14200, "gel": 0 },
-            { "nome": "Oiapoque", "lat": 3.8414, "lon": -51.8351, "masculino": 443635, "feminino": 36339, "gel": 12000 },
-            { "nome": "Pedra Branca do Amapari", "lat": 0.7758, "lon": -51.9525, "masculino": 230400, "feminino": 5800, "gel": 0 },
-            { "nome": "Mazagão", "lat": -0.1150, "lon": -51.2894, "masculino": 465300, "feminino": 14300, "gel": 0 },
-            { "nome": "Serra do Navio", "lat": 0.8900, "lon": -52.0000, "masculino": 84404, "feminino": 5990, "gel": 0 },
-            { "nome": "Itaubal", "lat": 0.5945, "lon": -50.6835, "masculino": 168459, "feminino": 10500, "gel": 0 },
-            { "nome": "Macapá", "lat": 0.0347, "lon": -51.0664, "masculino": 2189600, "feminino": 184669, "gel": 261200 },
-            // Instituições (Consideradas dentro de Macapá para fins geográficos, mas separadas na análise)
-            { "nome": "SVS/AP (Instituição)", "lat": 0.0450, "lon": -51.0500, "masculino": 648464, "feminino": 115011, "gel": 53371 },
-            { "nome": "SAE/CTA Estadual", "lat": 0.0300, "lon": -51.0700, "masculino": 360000, "feminino": 48200, "gel": 16000 },
-            { "nome": "CRDT", "lat": 0.0400, "lon": -51.0600, "masculino": 318252, "feminino": 2534, "gel": 8500 }
+            { "nome": "Ferreira Gomes", "lat": 0.8554, "lon": -51.1821, "masculino": 158720, "feminino": 9600, "gel": 16400 },
+            { "nome": "Laranjal do Jari", "lat": -0.84, "lon": -52.5218, "masculino": 457336, "feminino": 20088, "gel": 46900 },
+            { "nome": "Santana", "lat": -0.0432, "lon": -51.1645, "masculino": 490000, "feminino": 21850, "gel": 34500 },
+            { "nome": "Vitória do Jari", "lat": -0.9262, "lon": -52.4231, "masculino": 252726, "feminino": 4400, "gel": 16300 },
+            { "nome": "Calçoene", "lat": 2.5354, "lon": -50.9487, "masculino": 281364, "feminino": 6600, "gel": 21200 },
+            { "nome": "Cutias do Araguari", "lat": 0.9717, "lon": -50.8008, "masculino": 99936, "feminino": 11096, "gel": 9100 },
+            { "nome": "Pracuúba", "lat": 1.7432, "lon": -50.7847, "masculino": 98784, "feminino": 3800, "gel": 11100 },
+            { "nome": "Tartarugalzinho", "lat": 1.5064, "lon": -50.9037, "masculino": 237600, "feminino": 1950, "gel": 9200 },
+            { "nome": "Amapá", "lat": 2.05, "lon": -50.79, "masculino": 231264, "feminino": 14200, "gel": 18700 },
+            { "nome": "Oiapoque", "lat": 3.84, "lon": -51.83, "masculino": 443635, "feminino": 36339, "gel": 27800 },
+            { "nome": "Pedra Branca do Amapari", "lat": 0.7758, "lon": -51.9525, "masculino": 230400, "feminino": 5800, "gel": 7100 },
+            { "nome": "Mazagão", "lat": -0.11, "lon": -51.28, "masculino": 465300, "feminino": 14300, "gel": 11200 },
+            { "nome": "Serra do Navio", "lat": 0.89, "lon": -52.0, "masculino": 95904, "feminino": 4096, "gel": 6200 },
+            { "nome": "Itaubal", "lat": 0.59, "lon": -50.68, "masculino": 0, "feminino": 0, "gel": 0 },
+            { "nome": "Macapá (Município)", "lat": 0.0347, "lon": -51.0664, "masculino": 0, "feminino": 184669, "gel": 261200 },
+            
+            // INSTITUIÇÕES ESTADUAIS E ESPECIAIS (Com micro-deslocamento na capital para não sobrepor)
+            { "nome": "SAE/CTA Estadual", "lat": 0.0314, "lon": -51.0526, "masculino": 396000, "feminino": 31800, "gel": 16500 },
+            { "nome": "Maternidade de Alto Risco", "lat": 0.0273, "lon": -51.0789, "masculino": 3456, "feminino": 490, "gel": 0 },
+            { "nome": "SVS/AP", "lat": 0.0488, "lon": -51.0716, "masculino": 754460, "feminino": 133811, "gel": 53371 },
+            { "nome": "DSEI", "lat": 0.0416, "lon": -51.0692, "masculino": 50400, "feminino": 2100, "gel": 0 },
+            { "nome": "IAPEN", "lat": 0.0363, "lon": -51.0749, "masculino": 29664, "feminino": 0, "gel": 0 },
+            { "nome": "HEMOAP", "lat": 0.0299, "lon": -51.0573, "masculino": 3600, "feminino": 600, "gel": 0 },
+            { "nome": "CRDT", "lat": 0.045, "lon": -51.0554, "masculino": 172800, "feminino": 1000, "gel": 8000 }
         ];
 
         // 2. INICIALIZAÇÃO DO MAPA E GRÁFICO
