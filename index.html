@@ -44,34 +44,38 @@
         /* Popups do Mapa */
         .popup-title { font-weight: bold; color: var(--primary); border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
 
-        /* --- INÍCIO DA RESPONSIVIDADE PARA CELULARES --- */
+       /* --- INÍCIO DA RESPONSIVIDADE PARA CELULARES --- */
         @media (max-width: 768px) {
             body { 
-                flex-direction: column; 
+                display: block; /* Desliga o flexbox que causa sobreposição */
                 height: auto; 
-                overflow: auto; 
+                overflow-y: auto; /* Permite rolagem normal */
             }
             #sidebar { 
                 width: 100%; 
+                height: auto; 
+                position: relative; 
                 box-sizing: border-box;
                 border-bottom: 4px solid var(--primary);
+                z-index: 1000;
             }
             #main-content { 
+                display: block; /* Separa o mapa e o gráfico em blocos rígidos */
+                width: 100%;
                 height: auto; 
-                display: flex;
-                flex-direction: column;
             }
             #map-container { 
-                height: 50vh; 
-                min-height: 400px; 
+                height: 450px; /* Altura exata e travada para o mapa no celular */
                 width: 100%;
+                position: relative;
+                z-index: 1; 
             }
             #chart-container { 
-                height: 50vh; 
-                min-height: 350px; 
+                height: 400px; /* Altura exata e travada para o gráfico */
                 width: 100%;
-                padding: 10px;
+                padding: 15px;
                 box-sizing: border-box;
+                background: #fff;
             }
             .control-group select { padding: 12px; font-size: 16px; } 
             .kpi-value { font-size: 18px; }
