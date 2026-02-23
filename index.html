@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard PROFÁGUA - Insumos IST Amapá</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f4f4f4; }
+        #map { height: 500px; width: 100%; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 20px; }
+        .legend { background: white; padding: 10px; line-height: 18px; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Monitoramento de Insumos de Prevenção (2019-2024)</h2>
+        <p>Produto Técnico - Mestrado PROFÁGUA/UNIFAP</p>
+    </div>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="dados.js"></script>
+    <script>
+        const map = L.map('map').setView([1.4, -51.7], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        dadosInsumos.forEach(item => {
+            const marker = L.circle([item.lat, item.lon], {
+                color: 'blue',
+                fillColor: '#3047f5',
+                fillOpacity: 0.5,
+                radius: Math.sqrt(item.masculino) * 100 // Escala visual proporcional
+            }).addTo(map);
+
+            marker.bindPopup(`
+                <b>Município:</b> ${item.municipio}<br>
+                <b>Preservativo Masculino:</b> ${item.masculino.toLocaleString()}<br>
+                <b>Preservativo Feminino:</b> ${item.feminino.toLocaleString()}<br>
+                <b>Gel Lubrificante:</b> ${item.gel.toLocaleString()}
+            `);
+        });
+    </script>
+</body>
+</html>
