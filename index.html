@@ -22,7 +22,8 @@
         /* Controles e Filtros */
         .control-group { margin-bottom: 20px; }
         .control-group label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 14px; }
-        .control-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; outline: none; }
+        .control-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; outline: none; background-color: #fdfdfd; }
+        optgroup { font-weight: bold; color: var(--primary); }
         
         /* Cards de Resumo */
         .kpi-card { background: var(--bg); border-left: 4px solid var(--primary); padding: 15px; margin-bottom: 10px; border-radius: 4px; }
@@ -41,61 +42,40 @@
         
         /* Popups do Mapa */
         .popup-title { font-weight: bold; color: var(--primary); border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
-        /* Popups do Mapa */
-        .popup-title { font-weight: bold; color: var(--primary); border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 5px; }
 
-       /* --- INÍCIO DA RESPONSIVIDADE PARA CELULARES --- */
+        /* --- RESPONSIVIDADE PARA CELULARES --- */
         @media (max-width: 768px) {
-            body { 
-                display: block; /* Desliga o flexbox que causa sobreposição */
-                height: auto; 
-                overflow-y: auto; /* Permite rolagem normal */
-            }
-            #sidebar { 
-                width: 100%; 
-                height: auto; 
-                position: relative; 
-                box-sizing: border-box;
-                border-bottom: 4px solid var(--primary);
-                z-index: 1000;
-            }
-            #main-content { 
-                display: block; /* Separa o mapa e o gráfico em blocos rígidos */
-                width: 100%;
-                height: auto; 
-            }
-            #map-container { 
-                height: 450px; /* Altura exata e travada para o mapa no celular */
-                width: 100%;
-                position: relative;
-                z-index: 1; 
-            }
-            #chart-container { 
-                height: 400px; /* Altura exata e travada para o gráfico */
-                width: 100%;
-                padding: 15px;
-                box-sizing: border-box;
-                background: #fff;
-            }
+            body { display: block; height: auto; overflow-y: auto; }
+            #sidebar { width: 100%; height: auto; position: relative; box-sizing: border-box; border-bottom: 4px solid var(--primary); z-index: 1000; }
+            #main-content { display: block; width: 100%; height: auto; }
+            #map-container { height: 450px; width: 100%; position: relative; z-index: 1; }
+            #chart-container { height: 400px; width: 100%; padding: 15px; box-sizing: border-box; background: #fff; }
             .control-group select { padding: 12px; font-size: 16px; } 
             .kpi-value { font-size: 18px; }
         }
-        /* --- FIM DA RESPONSIVIDADE --- */
     </style>
 </head>
 <body>
 
     <div id="sidebar">
         <div class="logo-area">
-            <h2>Insumos de prevenção às IST/HIV no Amapá(2019-2024)</h2>
+            <h2>Monitoramento IST</h2>
             <p>PROFÁGUA / UNIFAP</p>
         </div>
 
         <div class="control-group">
             <label for="select-local">📍 Filtrar por Localidade:</label>
             <select id="select-local" onchange="atualizarDashboard()">
-                <option value="todos">Estado do Amapá (Geral)</option>
-                </select>
+                <optgroup label="--- VISÕES AGREGADAS ---">
+                    <option value="todos">Estado do Amapá (Geral)</option>
+                    <option value="apenas_municipios">Apenas Municípios</option>
+                    <option value="apenas_instituicoes">Apenas Instituições Estaduais</option>
+                    <option value="apenas_ubs">Apenas Unidades Básicas (UBS/Macapá)</option>
+                </optgroup>
+                <optgroup label="--- MUNICÍPIOS ---" id="opt-municipios"></optgroup>
+                <optgroup label="--- INSTITUIÇÕES ESTADUAIS ---" id="opt-instituicoes"></optgroup>
+                <optgroup label="--- UNIDADES DE SAÚDE (MACAPÁ) ---" id="opt-ubs"></optgroup>
+            </select>
         </div>
 
         <div class="control-group">
@@ -137,84 +117,83 @@
     </div>
 
     <script>
-       // 1. BASE DE DADOS INTEGRADA E RECALIBRADA (ALTA PRECISÃO)
+        // 1. BASE DE DADOS INTEGRADA E RECALIBRADA (ALTA PRECISÃO GEOGRÁFICA)
         const baseDados = [
-            // --- MUNICÍPIOS (16 FONTES) ---
-            { "nome": "Porto Grande", "lat": 0.7117663424455695, "lon": -51.41388277598287, "masculino": 360576, "feminino": 20050, "gel": 13100, "categoria": "municipio" },
-            { "nome": "Ferreira Gomes", "lat": 0.8554534007496813, "lon": -51.18219269640595, "masculino": 158720, "feminino": 9600, "gel": 16400, "categoria": "municipio" },
-            { "nome": "Laranjal do Jari", "lat": -0.8400850834922742, "lon": -52.52186825220827, "masculino": 457336, "feminino": 20088, "gel": 46900, "categoria": "municipio" },
-            { "nome": "Santana", "lat": -0.043248563806983005, "lon": -51.164596744120814, "masculino": 490000, "feminino": 21850, "gel": 34500, "categoria": "municipio" },
-            { "nome": "Vitória do Jari", "lat": -0.9262334046900079, "lon": -52.42317626420678, "masculino": 252726, "feminino": 4400, "gel": 16300, "categoria": "municipio" },
-            { "nome": "Calçoene", "lat": 2.5354143212207214, "lon": -50.94875800430949, "masculino": 281364, "feminino": 6600, "gel": 21200, "categoria": "municipio" },
-            { "nome": "Cutias do Araguari", "lat": 0.9717776253725509, "lon": -50.80085874242505, "masculino": 99936, "feminino": 11096, "gel": 9100, "categoria": "municipio" },
-            { "nome": "Pracuúba", "lat": 1.7432955828091725, "lon": -50.78479563187989, "masculino": 98784, "feminino": 3800, "gel": 11100, "categoria": "municipio" },
-            { "nome": "Tartarugalzinho", "lat": 1.506449146705807, "lon": -50.91011432830879, "masculino": 237600, "feminino": 1950, "gel": 9200, "categoria": "municipio" },
-            { "nome": "Amapá", "lat": 2.065516171135829, "lon": -50.79393461434452, "masculino": 231264, "feminino": 14200, "gel": 18700, "categoria": "municipio" },
-            { "nome": "Oiapoque", "lat": 3.843415335574671, "lon": -51.837669642982114, "masculino": 443635, "feminino": 36339, "gel": 27800, "categoria": "municipio" },
-            { "nome": "Pedra Branca do Amapari", "lat": 0.8140145496979191, "lon": -51.983530918133646, "masculino": 230400, "feminino": 5800, "gel": 7100, "categoria": "municipio" },
-            { "nome": "Mazagão", "lat": -0.10779614881055163, "lon": -51.285819711538466, "masculino": 465300, "feminino": 14300, "gel": 11200, "categoria": "municipio" },
-            { "nome": "Serra do Navio", "lat": 0.8994723869472685, "lon": -52.00639161997611, "masculino": 95904, "feminino": 4096, "gel": 6200, "categoria": "municipio" },
-            { "nome": "Itaubal", "lat": 0.5260952733002644, "lon": -50.73086321991304, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "municipio" },
-            { "nome": "Macapá (Município Total)", "lat": 0.04041213650703871, "lon": -51.05875418659378, "masculino": 5542344, "feminino": 184669, "gel": 261200, "categoria": "municipio" },
+            // --- MUNICÍPIOS ---
+            { "nome": "Porto Grande", "lat": 0.711766, "lon": -51.413882, "masculino": 360576, "feminino": 20050, "gel": 13100, "categoria": "municipio" },
+            { "nome": "Ferreira Gomes", "lat": 0.855453, "lon": -51.182192, "masculino": 158720, "feminino": 9600, "gel": 16400, "categoria": "municipio" },
+            { "nome": "Laranjal do Jari", "lat": -0.840085, "lon": -52.521868, "masculino": 457336, "feminino": 20088, "gel": 46900, "categoria": "municipio" },
+            { "nome": "Santana", "lat": -0.043248, "lon": -51.164596, "masculino": 490000, "feminino": 21850, "gel": 34500, "categoria": "municipio" },
+            { "nome": "Vitória do Jari", "lat": -0.926233, "lon": -52.423176, "masculino": 252726, "feminino": 4400, "gel": 16300, "categoria": "municipio" },
+            { "nome": "Calçoene", "lat": 2.535414, "lon": -50.948758, "masculino": 281364, "feminino": 6600, "gel": 21200, "categoria": "municipio" },
+            { "nome": "Cutias do Araguari", "lat": 0.971777, "lon": -50.800858, "masculino": 99936, "feminino": 11096, "gel": 9100, "categoria": "municipio" },
+            { "nome": "Pracuúba", "lat": 1.743295, "lon": -50.784795, "masculino": 98784, "feminino": 3800, "gel": 11100, "categoria": "municipio" },
+            { "nome": "Tartarugalzinho", "lat": 1.506449, "lon": -50.910114, "masculino": 237600, "feminino": 1950, "gel": 9200, "categoria": "municipio" },
+            { "nome": "Amapá", "lat": 2.065516, "lon": -50.793934, "masculino": 231264, "feminino": 14200, "gel": 18700, "categoria": "municipio" },
+            { "nome": "Oiapoque", "lat": 3.843415, "lon": -51.837669, "masculino": 443635, "feminino": 36339, "gel": 27800, "categoria": "municipio" },
+            { "nome": "Pedra Branca do Amapari", "lat": 0.814014, "lon": -51.983530, "masculino": 230400, "feminino": 5800, "gel": 7100, "categoria": "municipio" },
+            { "nome": "Mazagão", "lat": -0.107796, "lon": -51.285819, "masculino": 465300, "feminino": 14300, "gel": 11200, "categoria": "municipio" },
+            { "nome": "Serra do Navio", "lat": 0.899472, "lon": -52.006391, "masculino": 95904, "feminino": 4096, "gel": 6200, "categoria": "municipio" },
+            { "nome": "Itaubal", "lat": 0.526095, "lon": -50.730863, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "municipio" },
+            { "nome": "Macapá (Município Total)", "lat": 0.040412, "lon": -51.058754, "masculino": 5542344, "feminino": 184669, "gel": 261200, "categoria": "municipio" },
 
             // --- INSTITUIÇÕES ESTADUAIS ---
-            { "nome": "SAE/CTA Estadual", "lat": 0.04051450545617424, "lon": -51.0597581199767, "masculino": 396000, "feminino": 31800, "gel": 16500, "categoria": "instituicao" },
-            { "nome": "SVS/AP", "lat": 0.023090219006650276, "lon": -51.07397671812501, "masculino": 754460, "feminino": 133811, "gel": 53371, "categoria": "instituicao" },
-            { "nome": "IAPEN", "lat": 0.03517436242878477, "lon": -51.11927387473155, "masculino": 29664, "feminino": 0, "gel": 0, "categoria": "instituicao" },
-            { "nome": "HEMOAP", "lat": 0.04278454595135909, "lon": -51.05985610463298, "masculino": 3600, "feminino": 600, "gel": 0, "categoria": "instituicao" },
-            { "nome": "CRDT", "lat": 0.03204339202048615, "lon": -51.068417098192334, "masculino": 172800, "feminino": 1000, "gel": 8000, "categoria": "instituicao" },
+            { "nome": "SAE/CTA Estadual", "lat": 0.040514, "lon": -51.059758, "masculino": 396000, "feminino": 31800, "gel": 16500, "categoria": "instituicao" },
+            { "nome": "SVS/AP", "lat": 0.023090, "lon": -51.073976, "masculino": 754460, "feminino": 133811, "gel": 53371, "categoria": "instituicao" },
+            { "nome": "IAPEN", "lat": 0.035174, "lon": -51.119273, "masculino": 29664, "feminino": 0, "gel": 0, "categoria": "instituicao" },
+            { "nome": "HEMOAP", "lat": 0.042784, "lon": -51.059856, "masculino": 3600, "feminino": 600, "gel": 0, "categoria": "instituicao" },
+            { "nome": "CRDT", "lat": 0.032043, "lon": -51.068417, "masculino": 172800, "feminino": 1000, "gel": 8000, "categoria": "instituicao" },
 
             // --- UNIDADES DE SAÚDE (MACAPÁ) ---
-            { "nome": "UBS Léliog Silva", "lat": 0.023099992016672476, "lon": -51.07950890278101, "masculino": 25880, "feminino": 196524, "gel": 1650, "categoria": "ubs" },
-            { "nome": "Secretaria Municipal de Saúde", "lat": 0.03202638201064085, "lon": -51.06155962964481, "masculino": 124064, "feminino": 1026336, "gel": 39314, "categoria": "ubs" },
-            { "nome": "UBS Cidade Nova", "lat": 0.05408485588127316, "lon": -51.042506330509134, "masculino": 10152, "feminino": 121572, "gel": 1600, "categoria": "ubs" },
-            { "nome": "UBS Alvaro Pereira Correa", "lat": 0.07676105916597513, "lon": -51.05577367760164, "masculino": 13920, "feminino": 115688, "gel": 1800, "categoria": "ubs" },
-            { "nome": "UBS Pedro Barros Monteiro", "lat": -0.05316293864665238, "lon": -51.11416486230475, "masculino": 33192, "feminino": 233824, "gel": 1750, "categoria": "ubs" },
-            { "nome": "UBS Infraero II", "lat": 0.07199133061916103, "lon": -51.081385513536155, "masculino": 22970, "feminino": 173874, "gel": 5618, "categoria": "ubs" },
-            { "nome": "UBS Marabaixo", "lat": 0.03775901896567699, "lon": -51.128758933468774, "masculino": 20836, "feminino": 160443, "gel": 2600, "categoria": "ubs" },
-            { "nome": "UBS Unifap", "lat": -0.009475338347595095, "lon": -51.088752515743174, "masculino": 22480, "feminino": 199072, "gel": 350, "categoria": "ubs" },
-            { "nome": "UBS Perpétuo Socorro", "lat": 0.04525968056276642, "lon": -51.04981897235849, "masculino": 30572, "feminino": 299719, "gel": 2300, "categoria": "ubs" },
-            { "nome": "UBS Coração", "lat": 0.02321647483138756, "lon": -51.17300144696103, "masculino": 26460, "feminino": 106628, "gel": 950, "categoria": "ubs" },
-            { "nome": "UBS Raimundo Hozanan", "lat": 0.013250761355887654, "lon": -51.07215688928892, "masculino": 30472, "feminino": 140574, "gel": 3250, "categoria": "ubs" },
-            { "nome": "PS Limão do Curuá", "lat": 0.7639602973844839, "lon": -50.16087013111738, "masculino": 5500, "feminino": 26640, "gel": 632, "categoria": "ubs" },
-            { "nome": "UBS Macapaba", "lat": 0.0881189763751064, "lon": -51.09799218928895, "masculino": 13972, "feminino": 86210, "gel": 5680, "categoria": "ubs" },
-            { "nome": "UBS Manoelzinho", "lat": 0.8722703785701041, "lon": -50.04678254696046, "masculino": 10764, "feminino": 112790, "gel": 1250, "categoria": "ubs" },
-            { "nome": "UBS Congós", "lat": 0.01170870553666642, "lon": -51.086937573945214, "masculino": 29156, "feminino": 204664, "gel": 950, "categoria": "ubs" },
-            { "nome": "UBS Rubin Brito Arinovitch", "lat": 0.022570003379029507, "lon": -51.05519842632701, "masculino": 21860, "feminino": 271079, "gel": 1550, "categoria": "ubs" },
-            { "nome": "Sec. Vigilância em Saúde PMM", "lat": 0.03237982207155951, "lon": -51.06227454620773, "masculino": 17600, "feminino": 122256, "gel": 10900, "categoria": "ubs" },
-            { "nome": "UBS São Pedro", "lat": 0.016979930665998216, "lon": -51.061162777648605, "masculino": 14808, "feminino": 88128, "gel": 2800, "categoria": "ubs" },
-            { "nome": "UBS São Pedro dos Bois", "lat": 0.29830736197783875, "lon": -50.98664305195208, "masculino": 1576, "feminino": 14496, "gel": 400, "categoria": "ubs" },
-            { "nome": "UBS Ariri", "lat": 0.30452633338803414, "lon": -51.1332556881844, "masculino": 888, "feminino": 4320, "gel": 0, "categoria": "ubs" },
-            { "nome": "UBS Ilha Redonda", "lat": 0.13962925909522342, "lon": -51.14579443346881, "masculino": 4672, "feminino": 26352, "gel": 2000, "categoria": "ubs" },
-            { "nome": "UBS Tessalônica", "lat": 0.3592828435130762, "lon": -51.124543902781014, "masculino": 6884, "feminino": 29952, "gel": 300, "categoria": "ubs" },
-            { "nome": "UBS Carmo do Maruanum", "lat": 0.17903089616715334, "lon": -51.271333053019134, "masculino": 6588, "feminino": 35939, "gel": 1420, "categoria": "ubs" },
-            { "nome": "UBS do Curiau", "lat": 0.13667890753693923, "lon": -51.047680187016695, "masculino": 12670, "feminino": 64784, "gel": 6650, "categoria": "ubs" },
-            { "nome": "UBS Fluvial Dra Celia Trasel", "lat": 0.021579161339929234, "lon": -51.05599870463293, "masculino": 1640, "feminino": 2165, "gel": 100, "categoria": "ubs" },
-            { "nome": "UBS BR 210", "lat": 0.09320839162679433, "lon": -51.11202850463302, "masculino": 5500, "feminino": 28368, "gel": 500, "categoria": "ubs" },
-            { "nome": "UPA Buritizal", "lat": 0.023169303666470985, "lon": -51.07952517579679, "masculino": 300, "feminino": 12384, "gel": 100, "categoria": "ubs" },
-            { "nome": "UBS Marcelo Cândia", "lat": 0.09265024752188665, "lon": -51.06503727579689, "masculino": 34688, "feminino": 291235, "gel": 4750, "categoria": "ubs" },
-            { "nome": "UBS Brasil Novo", "lat": 0.0895069881374895, "lon": -51.088546733468924, "masculino": 22230, "feminino": 228682, "gel": 1550, "categoria": "ubs" },
-            { "nome": "UBS Pacoval", "lat": 0.052249407227175144, "lon": -51.053750789288934, "masculino": 11544, "feminino": 96704, "gel": 400, "categoria": "ubs" },
-            { "nome": "UBS Tracajatuba", "lat": 0.7225338309479468, "lon": -50.70883827579647, "masculino": 6108, "feminino": 19297, "gel": 1288, "categoria": "ubs" },
-            { "nome": "UBS São Joaquim do Pacuí", "lat": 0.811024473639734, "lon": -50.75329174832657, "masculino": 13448, "feminino": 82080, "gel": 500, "categoria": "ubs" },
-            { "nome": "PS Corre Água do Piririm", "lat": 0.7737342842343624, "lon": -50.59590906230432, "masculino": 4560, "feminino": 14144, "gel": 700, "categoria": "ubs" },
-            { "nome": "PS Abacate da Pedreira", "lat": 0.3208546583596269, "lon": -50.873071835320346, "masculino": 7036, "feminino": 30240, "gel": 450, "categoria": "ubs" },
-            { "nome": "UBS Santo Antônio da Pedreira", "lat": 0.3390549445098756, "lon": -50.87277991997668, "masculino": 5432, "feminino": 36730, "gel": 1000, "categoria": "ubs" },
-            { "nome": "PS Bacaba", "lat": 0.8717627198729476, "lon": -50.045802073944586, "masculino": 1332, "feminino": 3408, "gel": 100, "categoria": "ubs" },
-            { "nome": "UBS Carapanatuba", "lat": 0.18857404658807642, "lon": -50.85570257579676, "masculino": 9684, "feminino": 51264, "gel": 150, "categoria": "ubs" },
-            { "nome": "UBS Leozildo Barreto Fontoura", "lat": 0.0018460767152807867, "lon": -51.08776318928909, "masculino": 7824, "feminino": 82522, "gel": 638, "categoria": "ubs" },
-            { "nome": "UBS Pantanal", "lat": 0.06974984766033579, "lon": -51.04794953161725, "masculino": 10304, "feminino": 48960, "gel": 500, "categoria": "ubs" },
-            { "nome": "UBS Conceição Rosa Moita", "lat": 0.03187190364674551, "lon": -51.08216171997663, "masculino": 9492, "feminino": 112464, "gel": 2240, "categoria": "ubs" },
-            { "nome": "UBS Pedrinhas", "lat": 0.00701100369389601, "lon": -51.068950718125, "masculino": 12312, "feminino": 101426, "gel": 350, "categoria": "ubs" },
-            { "nome": "UBS Santa Luzia do Pacuí", "lat": 0.8484622236799612, "lon": -50.66220134775207, "masculino": 10788, "feminino": 80362, "gel": 3400, "categoria": "ubs" },
-            { "nome": "UBS Novo Horizonte", "lat": 0.09937913740786919, "lon": -51.0470602432878, "masculino": 7708, "feminino": 123728, "gel": 50, "categoria": "ubs" },
-            { "nome": "UBS Ambé", "lat": 0.3291230264143262, "lon": -50.969627735256324, "masculino": 4632, "feminino": 4896, "gel": 350, "categoria": "ubs" },
-            { "nome": "UBS Maranata", "lat": 0.03191481898351419, "lon": -51.08219390648451, "masculino": 2044, "feminino": 20592, "gel": 100, "categoria": "ubs" },
-            { "nome": "UBS Padre Raul Matte", "lat": -0.0036971097870100045, "lon": -51.09906061997659, "masculino": 6716, "feminino": 50160, "gel": 4000, "categoria": "ubs" },
-            { "nome": "PS Freguesia do Bailique", "lat": 0.8729032932706394, "lon": -50.04667532784209, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "ubs" },
-            { "nome": "Fraternidade Capuchinhos", "lat": 0.041811803619996694, "lon": -51.07514697791373, "masculino": 964, "feminino": 3605, "gel": 250, "categoria": "ubs" },
-            { "nome": "PS Arraiol do Bailique", "lat": 1.0073764425422453, "lon": -50.10740479299175, "masculino": 744, "feminino": 5449, "gel": 100, "categoria": "ubs" },
-            { "nome": "Carreta Móvel Saúde da Mulher", "lat": 0.03093354414482651, "lon": -51.05456012589178, "masculino": 1600, "feminino": 9792, "gel": 0, "categoria": "ubs" },
+            { "nome": "UBS Léliog Silva", "lat": 0.023099, "lon": -51.079508, "masculino": 25880, "feminino": 196524, "gel": 1650, "categoria": "ubs" },
+            { "nome": "Secretaria Municipal de Saúde", "lat": 0.032026, "lon": -51.061559, "masculino": 124064, "feminino": 1026336, "gel": 39314, "categoria": "ubs" },
+            { "nome": "UBS Cidade Nova", "lat": 0.054084, "lon": -51.042506, "masculino": 10152, "feminino": 121572, "gel": 1600, "categoria": "ubs" },
+            { "nome": "UBS Alvaro Pereira Correa", "lat": 0.076761, "lon": -51.055773, "masculino": 13920, "feminino": 115688, "gel": 1800, "categoria": "ubs" },
+            { "nome": "UBS Pedro Barros Monteiro", "lat": -0.053162, "lon": -51.114164, "masculino": 33192, "feminino": 233824, "gel": 1750, "categoria": "ubs" },
+            { "nome": "UBS Infraero II", "lat": 0.071991, "lon": -51.081385, "masculino": 22970, "feminino": 173874, "gel": 5618, "categoria": "ubs" },
+            { "nome": "UBS Marabaixo", "lat": 0.037759, "lon": -51.128758, "masculino": 20836, "feminino": 160443, "gel": 2600, "categoria": "ubs" },
+            { "nome": "UBS Unifap", "lat": -0.009475, "lon": -51.088752, "masculino": 22480, "feminino": 199072, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Perpétuo Socorro", "lat": 0.045259, "lon": -51.049818, "masculino": 30572, "feminino": 299719, "gel": 2300, "categoria": "ubs" },
+            { "nome": "UBS Coração", "lat": 0.023216, "lon": -51.173001, "masculino": 26460, "feminino": 106628, "gel": 950, "categoria": "ubs" },
+            { "nome": "UBS Raimundo Hozanan", "lat": 0.013250, "lon": -51.072156, "masculino": 30472, "feminino": 140574, "gel": 3250, "categoria": "ubs" },
+            { "nome": "PS Limão do Curuá", "lat": 0.763960, "lon": -50.160870, "masculino": 5500, "feminino": 26640, "gel": 632, "categoria": "ubs" },
+            { "nome": "UBS Macapaba", "lat": 0.088118, "lon": -51.097992, "masculino": 13972, "feminino": 86210, "gel": 5680, "categoria": "ubs" },
+            { "nome": "UBS Manoelzinho", "lat": 0.872270, "lon": -50.046782, "masculino": 10764, "feminino": 112790, "gel": 1250, "categoria": "ubs" },
+            { "nome": "UBS Congós", "lat": 0.011708, "lon": -51.086937, "masculino": 29156, "feminino": 204664, "gel": 950, "categoria": "ubs" },
+            { "nome": "UBS Rubin Brito Arinovitch", "lat": 0.022570, "lon": -51.055198, "masculino": 21860, "feminino": 271079, "gel": 1550, "categoria": "ubs" },
+            { "nome": "Sec. Vigilância em Saúde PMM", "lat": 0.032379, "lon": -51.062274, "masculino": 17600, "feminino": 122256, "gel": 10900, "categoria": "ubs" },
+            { "nome": "UBS São Pedro", "lat": 0.016979, "lon": -51.061162, "masculino": 14808, "feminino": 88128, "gel": 2800, "categoria": "ubs" },
+            { "nome": "UBS São Pedro dos Bois", "lat": 0.298307, "lon": -50.986643, "masculino": 1576, "feminino": 14496, "gel": 400, "categoria": "ubs" },
+            { "nome": "UBS Ariri", "lat": 0.304526, "lon": -51.133255, "masculino": 888, "feminino": 4320, "gel": 0, "categoria": "ubs" },
+            { "nome": "UBS Ilha Redonda", "lat": 0.139629, "lon": -51.145794, "masculino": 4672, "feminino": 26352, "gel": 2000, "categoria": "ubs" },
+            { "nome": "UBS Tessalônica", "lat": 0.359282, "lon": -51.124543, "masculino": 6884, "feminino": 29952, "gel": 300, "categoria": "ubs" },
+            { "nome": "UBS Carmo do Maruanum", "lat": 0.179030, "lon": -51.271333, "masculino": 6588, "feminino": 35939, "gel": 1420, "categoria": "ubs" },
+            { "nome": "UBS do Curiau", "lat": 0.136678, "lon": -51.047680, "masculino": 12670, "feminino": 64784, "gel": 6650, "categoria": "ubs" },
+            { "nome": "UBS Fluvial Dra Celia Trasel", "lat": 0.021579, "lon": -51.055998, "masculino": 1640, "feminino": 2165, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS BR 210", "lat": 0.093208, "lon": -51.112028, "masculino": 5500, "feminino": 28368, "gel": 500, "categoria": "ubs" },
+            { "nome": "UPA Buritizal", "lat": 0.023169, "lon": -51.079525, "masculino": 300, "feminino": 12384, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Marcelo Cândia", "lat": 0.092650, "lon": -51.065037, "masculino": 34688, "feminino": 291235, "gel": 4750, "categoria": "ubs" },
+            { "nome": "UBS Brasil Novo", "lat": 0.089506, "lon": -51.088546, "masculino": 22230, "feminino": 228682, "gel": 1550, "categoria": "ubs" },
+            { "nome": "UBS Pacoval", "lat": 0.052249, "lon": -51.053750, "masculino": 11544, "feminino": 96704, "gel": 400, "categoria": "ubs" },
+            { "nome": "UBS Tracajatuba", "lat": 0.722533, "lon": -50.708838, "masculino": 6108, "feminino": 19297, "gel": 1288, "categoria": "ubs" },
+            { "nome": "UBS São Joaquim do Pacuí", "lat": 0.811024, "lon": -50.753291, "masculino": 13448, "feminino": 82080, "gel": 500, "categoria": "ubs" },
+            { "nome": "PS Corre Água do Piririm", "lat": 0.773734, "lon": -50.595909, "masculino": 4560, "feminino": 14144, "gel": 700, "categoria": "ubs" },
+            { "nome": "PS Abacate da Pedreira", "lat": 0.320854, "lon": -50.873071, "masculino": 7036, "feminino": 30240, "gel": 450, "categoria": "ubs" },
+            { "nome": "UBS Santo Antônio da Pedreira", "lat": 0.339054, "lon": -50.872779, "masculino": 5432, "feminino": 36730, "gel": 1000, "categoria": "ubs" },
+            { "nome": "PS Bacaba", "lat": 0.871762, "lon": -50.045802, "masculino": 1332, "feminino": 3408, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Carapanatuba", "lat": 0.188574, "lon": -50.855702, "masculino": 9684, "feminino": 51264, "gel": 150, "categoria": "ubs" },
+            { "nome": "UBS Leozildo Barreto Fontoura", "lat": 0.001846, "lon": -51.087763, "masculino": 7824, "feminino": 82522, "gel": 638, "categoria": "ubs" },
+            { "nome": "UBS Pantanal", "lat": 0.069749, "lon": -51.047949, "masculino": 10304, "feminino": 48960, "gel": 500, "categoria": "ubs" },
+            { "nome": "UBS Conceição Rosa Moita", "lat": 0.031871, "lon": -51.082161, "masculino": 9492, "feminino": 112464, "gel": 2240, "categoria": "ubs" },
+            { "nome": "UBS Pedrinhas", "lat": 0.007011, "lon": -51.068950, "masculino": 12312, "feminino": 101426, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Santa Luzia do Pacuí", "lat": 0.848462, "lon": -50.662201, "masculino": 10788, "feminino": 80362, "gel": 3400, "categoria": "ubs" },
+            { "nome": "UBS Novo Horizonte", "lat": 0.099379, "lon": -51.047060, "masculino": 7708, "feminino": 123728, "gel": 50, "categoria": "ubs" },
+            { "nome": "UBS Ambé", "lat": 0.329123, "lon": -50.969627, "masculino": 4632, "feminino": 4896, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Maranata", "lat": 0.031914, "lon": -51.082193, "masculino": 2044, "feminino": 20592, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Padre Raul Matte", "lat": -0.003697, "lon": -51.099060, "masculino": 6716, "feminino": 50160, "gel": 4000, "categoria": "ubs" },
+            { "nome": "PS Freguesia do Bailique", "lat": 0.872903, "lon": -50.046675, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "ubs" },
+            { "nome": "Fraternidade Capuchinhos", "lat": 0.041811, "lon": -51.075146, "masculino": 964, "feminino": 3605, "gel": 250, "categoria": "ubs" },
+            { "nome": "PS Arraiol do Bailique", "lat": 1.007376, "lon": -50.107404, "masculino": 744, "feminino": 5449, "gel": 100, "categoria": "ubs" },  { "nome": "Carreta Móvel Saúde da Mulher", "lat": 0.03093354414482651, "lon": -51.05456012589178, "masculino": 1600, "feminino": 9792, "gel": 0, "categoria": "ubs" },
             { "nome": "UBS Lontra da Pedreira", "lat": 0.30163755757173505, "lon": -50.86790111169928, "masculino": 432, "feminino": 8784, "gel": 300, "categoria": "ubs" }
         ];
         /// 2. CONFIGURAÇÃO DAS CAMADAS DO MAPA (ACADÊMICO VS SATÉLITE)
