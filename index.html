@@ -137,37 +137,91 @@
     </div>
 
     <script>
-// 1. BASE DE DADOS INTEGRADA COM 23 FONTES
+        // 1. BASE DE DADOS INTEGRADA COM MUNICIPIOS, INSTITUIÇÕES E UBSs
         const baseDados = [
-            // MUNICÍPIOS
-            { "nome": "Porto Grande", "lat": 0.7117, "lon": -51.4138, "masculino": 360576, "feminino": 20050, "gel": 13100 },
-            { "nome": "Ferreira Gomes", "lat": 0.8554, "lon": -51.1821, "masculino": 158720, "feminino": 9600, "gel": 16400 },
-            { "nome": "Laranjal do Jari", "lat": -0.84, "lon": -52.5218, "masculino": 457336, "feminino": 20088, "gel": 46900 },
-            { "nome": "Santana", "lat": -0.0432, "lon": -51.1645, "masculino": 490000, "feminino": 21850, "gel": 34500 },
-            { "nome": "Vitória do Jari", "lat": -0.9262, "lon": -52.4231, "masculino": 252726, "feminino": 4400, "gel": 16300 },
-            { "nome": "Calçoene", "lat": 2.5354, "lon": -50.9487, "masculino": 281364, "feminino": 6600, "gel": 21200 },
-            { "nome": "Cutias do Araguari", "lat": 0.9717, "lon": -50.8008, "masculino": 99936, "feminino": 11096, "gel": 9100 },
-            { "nome": "Pracuúba", "lat": 1.7432, "lon": -50.7847, "masculino": 98784, "feminino": 3800, "gel": 11100 },
-            { "nome": "Tartarugalzinho", "lat": 1.5064, "lon": -50.9037, "masculino": 237600, "feminino": 1950, "gel": 9200 },
-            { "nome": "Amapá", "lat": 2.05, "lon": -50.79, "masculino": 231264, "feminino": 14200, "gel": 18700 },
-            { "nome": "Oiapoque", "lat": 3.84, "lon": -51.83, "masculino": 443635, "feminino": 36339, "gel": 27800 },
-            { "nome": "Pedra Branca do Amapari", "lat": 0.7758, "lon": -51.9525, "masculino": 230400, "feminino": 5800, "gel": 7100 },
-            { "nome": "Mazagão", "lat": -0.11, "lon": -51.28, "masculino": 465300, "feminino": 14300, "gel": 11200 },
-            { "nome": "Serra do Navio", "lat": 0.89, "lon": -52.0, "masculino": 95904, "feminino": 4096, "gel": 6200 },
-            { "nome": "Itaubal", "lat": 0.59, "lon": -50.68, "masculino": 0, "feminino": 0, "gel": 0 },
-            { "nome": "Macapá", "lat": 0.0347, "lon": -51.0664, "masculino": 0, "feminino": 184669, "gel": 261200 },
+            // --- MUNICÍPIOS ---
+            { "nome": "Porto Grande", "lat": 0.7117, "lon": -51.4138, "masculino": 360576, "feminino": 20050, "gel": 13100, "categoria": "municipio" },
+            { "nome": "Ferreira Gomes", "lat": 0.8554, "lon": -51.1821, "masculino": 158720, "feminino": 9600, "gel": 16400, "categoria": "municipio" },
+            { "nome": "Laranjal do Jari", "lat": -0.84, "lon": -52.5218, "masculino": 457336, "feminino": 20088, "gel": 46900, "categoria": "municipio" },
+            { "nome": "Santana", "lat": -0.0432, "lon": -51.1645, "masculino": 490000, "feminino": 21850, "gel": 34500, "categoria": "municipio" },
+            { "nome": "Vitória do Jari", "lat": -0.9262, "lon": -52.4231, "masculino": 252726, "feminino": 4400, "gel": 16300, "categoria": "municipio" },
+            { "nome": "Calçoene", "lat": 2.5354, "lon": -50.9487, "masculino": 281364, "feminino": 6600, "gel": 21200, "categoria": "municipio" },
+            { "nome": "Cutias do Araguari", "lat": 0.9717, "lon": -50.8008, "masculino": 99936, "feminino": 11096, "gel": 9100, "categoria": "municipio" },
+            { "nome": "Pracuúba", "lat": 1.7432, "lon": -50.7847, "masculino": 98784, "feminino": 3800, "gel": 11100, "categoria": "municipio" },
+            { "nome": "Tartarugalzinho", "lat": 1.5064, "lon": -50.9037, "masculino": 237600, "feminino": 1950, "gel": 9200, "categoria": "municipio" },
+            { "nome": "Amapá", "lat": 2.05, "lon": -50.79, "masculino": 231264, "feminino": 14200, "gel": 18700, "categoria": "municipio" },
+            { "nome": "Oiapoque", "lat": 3.84, "lon": -51.83, "masculino": 443635, "feminino": 36339, "gel": 27800, "categoria": "municipio" },
+            { "nome": "Pedra Branca do Amapari", "lat": 0.7758, "lon": -51.9525, "masculino": 230400, "feminino": 5800, "gel": 7100, "categoria": "municipio" },
+            { "nome": "Mazagão", "lat": -0.11, "lon": -51.28, "masculino": 465300, "feminino": 14300, "gel": 11200, "categoria": "municipio" },
+            { "nome": "Serra do Navio", "lat": 0.89, "lon": -52.0, "masculino": 95904, "feminino": 4096, "gel": 6200, "categoria": "municipio" },
+            { "nome": "Itaubal", "lat": 0.59, "lon": -50.68, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "municipio" },
+            { "nome": "Macapá (Município Total)", "lat": 0.0347, "lon": -51.0664, "masculino": 5542344, "feminino": 184669, "gel": 261200, "categoria": "municipio" },
             
-            // INSTITUIÇÕES ESTADUAIS E ESPECIAIS (Com micro-deslocamento na capital para não sobrepor)
-            { "nome": "SAE/CTA Estadual", "lat": 0.0314, "lon": -51.0526, "masculino": 396000, "feminino": 31800, "gel": 16500 },
-            { "nome": "Maternidade de Alto Risco", "lat": 0.0273, "lon": -51.0789, "masculino": 3456, "feminino": 490, "gel": 0 },
-            { "nome": "SVS - Superintendência de Vigilância em Saúde", "lat": 0.0488, "lon": -51.0716, "masculino": 754460, "feminino": 133811, "gel": 53371 },
-            { "nome": "Distrito Sanitário Especial Indígena do Amapá e Norte do Pará", "lat": 0.0416, "lon": -51.0692, "masculino": 50400, "feminino": 2100, "gel": 0 },
-            { "nome": "IAPEN", "lat": 0.0363, "lon": -51.0749, "masculino": 29664, "feminino": 0, "gel": 0 },
-            { "nome": "HEMOAP", "lat": 0.0299, "lon": -51.0573, "masculino": 3600, "feminino": 600, "gel": 0 },
-            { "nome": "Centro de Referência em Doenças Tropicais", "lat": 0.045, "lon": -51.0554, "masculino": 172800, "feminino": 1000, "gel": 8000 }
+            // --- INSTITUIÇÕES ESTADUAIS ---
+            { "nome": "SAE/CTA Estadual", "lat": 0.0314, "lon": -51.0526, "masculino": 396000, "feminino": 31800, "gel": 16500, "categoria": "instituicao" },
+            { "nome": "Maternidade de Alto Risco", "lat": 0.0273, "lon": -51.0789, "masculino": 3456, "feminino": 490, "gel": 0, "categoria": "instituicao" },
+            { "nome": "SVS/AP", "lat": 0.0488, "lon": -51.0716, "masculino": 754460, "feminino": 133811, "gel": 53371, "categoria": "instituicao" },
+            { "nome": "DSEI", "lat": 0.0416, "lon": -51.0692, "masculino": 50400, "feminino": 2100, "gel": 0, "categoria": "instituicao" },
+            { "nome": "IAPEN", "lat": 0.0363, "lon": -51.0749, "masculino": 29664, "feminino": 0, "gel": 0, "categoria": "instituicao" },
+            { "nome": "HEMOAP", "lat": 0.0299, "lon": -51.0573, "masculino": 3600, "feminino": 600, "gel": 0, "categoria": "instituicao" },
+            { "nome": "CRDT", "lat": 0.045, "lon": -51.0554, "masculino": 172800, "feminino": 1000, "gel": 8000, "categoria": "instituicao" },
+
+            // --- UNIDADES BÁSICAS DE SAÚDE (MACAPÁ) ---
+            { "nome": "UBS Léliog Silva", "lat": -0.015, "lon": -51.087, "masculino": 25880, "feminino": 196524, "gel": 1650, "categoria": "ubs" },
+            { "nome": "Secretaria Municipal de Saúde", "lat": 0.042, "lon": -51.055, "masculino": 124064, "feminino": 1026336, "gel": 39314, "categoria": "ubs" },
+            { "nome": "UBS Cidade Nova", "lat": 0.048, "lon": -51.042, "masculino": 10152, "feminino": 121572, "gel": 1600, "categoria": "ubs" },
+            { "nome": "UBS Alvaro Pereira Correa", "lat": 0.092, "lon": -51.056, "masculino": 13920, "feminino": 115688, "gel": 1800, "categoria": "ubs" },
+            { "nome": "UBS Pedro Barros Monteiro", "lat": 0.081, "lon": -51.085, "masculino": 33192, "feminino": 233824, "gel": 1750, "categoria": "ubs" },
+            { "nome": "UBS Infraero II", "lat": 0.089, "lon": -51.066, "masculino": 22970, "feminino": 173874, "gel": 5618, "categoria": "ubs" },
+            { "nome": "UBS Marabaixo", "lat": 0.034, "lon": -51.109, "masculino": 20836, "feminino": 160443, "gel": 2600, "categoria": "ubs" },
+            { "nome": "UBS Unifap", "lat": -0.011, "lon": -51.085, "masculino": 22480, "feminino": 199072, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Perpétuo Socorro", "lat": 0.046, "lon": -51.036, "masculino": 30572, "feminino": 299719, "gel": 2300, "categoria": "ubs" },
+            { "nome": "UBS Coração", "lat": -0.011, "lon": -51.134, "masculino": 26460, "feminino": 106628, "gel": 950, "categoria": "ubs" },
+            { "nome": "UBS Raimundo Hozanan", "lat": 0.009, "lon": -51.082, "masculino": 30472, "feminino": 140574, "gel": 3250, "categoria": "ubs" },
+            { "nome": "PS Limão Do Curuá", "lat": 0.161, "lon": -50.835, "masculino": 5500, "feminino": 26640, "gel": 632, "categoria": "ubs" },
+            { "nome": "UBS Macapaba", "lat": 0.098, "lon": -51.061, "masculino": 13972, "feminino": 86210, "gel": 5680, "categoria": "ubs" },
+            { "nome": "UBS Manoelzinho", "lat": 0.076, "lon": -51.066, "masculino": 10764, "feminino": 112790, "gel": 1250, "categoria": "ubs" },
+            { "nome": "UBS Congós", "lat": 0.007, "lon": -51.077, "masculino": 29156, "feminino": 204664, "gel": 950, "categoria": "ubs" },
+            { "nome": "UBS Rubin Brito Arinovitch", "lat": 0.038, "lon": -51.065, "masculino": 21860, "feminino": 271079, "gel": 1550, "categoria": "ubs" },
+            { "nome": "Sec. Vigilância em Saúde PMM", "lat": 0.042, "lon": -51.062, "masculino": 17600, "feminino": 122256, "gel": 10900, "categoria": "ubs" },
+            { "nome": "UBS São Pedro", "lat": 0.013, "lon": -51.053, "masculino": 14808, "feminino": 88128, "gel": 2800, "categoria": "ubs" },
+            { "nome": "UBS São Pedro Dos Bois", "lat": -0.158, "lon": -50.963, "masculino": 1576, "feminino": 14496, "gel": 400, "categoria": "ubs" },
+            { "nome": "UBS Ariri", "lat": 0.354, "lon": -50.932, "masculino": 888, "feminino": 4320, "gel": 0, "categoria": "ubs" },
+            { "nome": "UBS Ilha Redonda", "lat": -0.152, "lon": -51.107, "masculino": 4672, "feminino": 26352, "gel": 2000, "categoria": "ubs" },
+            { "nome": "UBS Tessalônica", "lat": 0.449, "lon": -51.082, "masculino": 6884, "feminino": 29952, "gel": 300, "categoria": "ubs" },
+            { "nome": "UBS Carmo Do Maruanum", "lat": 0.177, "lon": -51.164, "masculino": 6588, "feminino": 35939, "gel": 1420, "categoria": "ubs" },
+            { "nome": "UBS Do Curiau", "lat": 0.147, "lon": -51.037, "masculino": 12670, "feminino": 64784, "gel": 6650, "categoria": "ubs" },
+            { "nome": "UBS Fluvial Dra Celia Trasel", "lat": 0.024, "lon": -51.035, "masculino": 1640, "feminino": 2165, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS BR 210", "lat": 0.071, "lon": -51.066, "masculino": 5500, "feminino": 28368, "gel": 500, "categoria": "ubs" },
+            { "nome": "UPA Buritizal", "lat": 0.013, "lon": -51.076, "masculino": 300, "feminino": 12384, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Marcelo Cândia", "lat": 0.046, "lon": -51.054, "masculino": 34688, "feminino": 291235, "gel": 4750, "categoria": "ubs" },
+            { "nome": "UBS Brasil Novo", "lat": 0.088, "lon": -51.067, "masculino": 22230, "feminino": 228682, "gel": 1550, "categoria": "ubs" },
+            { "nome": "UBS Pacoval", "lat": 0.052, "lon": -51.045, "masculino": 11544, "feminino": 96704, "gel": 400, "categoria": "ubs" },
+            { "nome": "UBS Tracajatuba", "lat": 0.655, "lon": -50.841, "masculino": 6108, "feminino": 19297, "gel": 1288, "categoria": "ubs" },
+            { "nome": "UBS São Joaquim Do Pacuí", "lat": 0.612, "lon": -50.866, "masculino": 13448, "feminino": 82080, "gel": 500, "categoria": "ubs" },
+            { "nome": "PS Corre Água Do Piririm", "lat": 0.177, "lon": -50.916, "masculino": 4560, "feminino": 14144, "gel": 700, "categoria": "ubs" },
+            { "nome": "PS Abacate Da Pedreira", "lat": 0.258, "lon": -50.871, "masculino": 7036, "feminino": 30240, "gel": 450, "categoria": "ubs" },
+            { "nome": "UBS Santo Antônio Da Pedreira", "lat": 0.244, "lon": -50.864, "masculino": 5432, "feminino": 36730, "gel": 1000, "categoria": "ubs" },
+            { "nome": "PS Bacaba", "lat": 0.198, "lon": -50.957, "masculino": 1332, "feminino": 3408, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Carapanatuba", "lat": 0.287, "lon": -50.835, "masculino": 9684, "feminino": 51264, "gel": 150, "categoria": "ubs" },
+            { "nome": "UBS Leozildo Barreto Fontoura", "lat": 0.0018, "lon": -51.087, "masculino": 7824, "feminino": 82522, "gel": 638, "categoria": "ubs" },
+            { "nome": "UBS Pantanal", "lat": 0.069, "lon": -51.047, "masculino": 10304, "feminino": 48960, "gel": 500, "categoria": "ubs" },
+            { "nome": "UBS Conceição Rosa Moita", "lat": 0.031, "lon": -51.082, "masculino": 9492, "feminino": 112464, "gel": 2240, "categoria": "ubs" },
+            { "nome": "Centro de Esp. Papaléo Paes", "lat": 0.071, "lon": -51.054, "masculino": 3976, "feminino": 16704, "gel": 200, "categoria": "ubs" },
+            { "nome": "UBS Pedrinhas", "lat": 0.007, "lon": -51.068, "masculino": 12312, "feminino": 101426, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Santa Luzia Do Pacuí", "lat": 0.848, "lon": -50.662, "masculino": 10788, "feminino": 80362, "gel": 3400, "categoria": "ubs" },
+            { "nome": "UBS Novo Horizonte", "lat": 0.099, "lon": -51.047, "masculino": 7708, "feminino": 123728, "gel": 50, "categoria": "ubs" },
+            { "nome": "UBS Ambé", "lat": 0.329, "lon": -50.969, "masculino": 4632, "feminino": 4896, "gel": 350, "categoria": "ubs" },
+            { "nome": "UBS Maranata", "lat": 0.129, "lon": -51.048, "masculino": 2044, "feminino": 20592, "gel": 100, "categoria": "ubs" },
+            { "nome": "UBS Padre Raul Matte", "lat": 0.027, "lon": -51.086, "masculino": 6716, "feminino": 50160, "gel": 4000, "categoria": "ubs" },
+            { "nome": "PS Freguesia Do Bailique", "lat": 1.05, "lon": -49.95, "masculino": 0, "feminino": 0, "gel": 0, "categoria": "ubs" },
+            { "nome": "Fraternidade Capuchinhos", "lat": 0.038, "lon": -51.053, "masculino": 964, "feminino": 3605, "gel": 250, "categoria": "ubs" },
+            { "nome": "PS Arraiol Do Bailique", "lat": 1.04, "lon": -49.93, "masculino": 744, "feminino": 5449, "gel": 100, "categoria": "ubs" },
+            { "nome": "Carreta Móvel Saúde da Mulher", "lat": 0.034, "lon": -51.066, "masculino": 1600, "feminino": 9792, "gel": 0, "categoria": "ubs" },
+            { "nome": "UBS Lontra Da Pedreira", "lat": 0.301, "lon": -50.852, "masculino": 432, "feminino": 8784, "gel": 300, "categoria": "ubs" }
         ];
 
-        // 2. INICIALIZAÇÃO DO MAPA E GRÁFICO
+        // 2. INICIALIZAÇÃO DO MAPA
         const map = L.map('map').setView([1.5, -51.5], 6);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
         
@@ -177,41 +231,74 @@
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
         });
 
+        // Ícone azul para UBSs (diferencia as unidades básicas dos municípios na visão geral)
+        const blueIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
+
         let layerMarkers = L.layerGroup().addTo(map);
         let meuGrafico = null;
 
-        // Preencher o select de locais
+        // Atualização do Select para incluir a nova categoria UBS
         const selectLocal = document.getElementById("select-local");
+        
+        // Criar os grupos dinamicamente
+        let htmlSelect = `
+            <optgroup label="--- VISÕES AGREGADAS ---">
+                <option value="todos">Estado do Amapá (Geral)</option>
+                <option value="apenas_municipios">Apenas Municípios</option>
+                <option value="apenas_instituicoes">Apenas Instituições Estaduais</option>
+                <option value="apenas_ubs">Apenas Unidades Básicas (UBS/Macapá)</option>
+            </optgroup>
+            <optgroup label="--- MUNICÍPIOS ---" id="opt-municipios"></optgroup>
+            <optgroup label="--- INSTITUIÇÕES ESTADUAIS ---" id="opt-instituicoes"></optgroup>
+            <optgroup label="--- UNIDADES DE SAÚDE (MACAPÁ) ---" id="opt-ubs"></optgroup>
+        `;
+        selectLocal.innerHTML = htmlSelect;
+
+        const optMunicipios = document.getElementById("opt-municipios");
+        const optInstituicoes = document.getElementById("opt-instituicoes");
+        const optUbs = document.getElementById("opt-ubs");
+
+        // Ordenar alfabeticamente para ficar profissional
         baseDados.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(local => {
             let opt = document.createElement("option");
             opt.value = local.nome;
             opt.innerHTML = local.nome;
-            selectLocal.appendChild(opt);
+            if (local.categoria === "instituicao") optInstituicoes.appendChild(opt);
+            else if (local.categoria === "ubs") optUbs.appendChild(opt);
+            else optMunicipios.appendChild(opt);
         });
 
         // Formatação Numérica
         const fmt = (num) => Math.round(num).toLocaleString('pt-BR');
 
-        // Função de Distribuição Simulada para a Série Histórica (Cria a flutuação ano a ano)
+        // Função de Distribuição 
         function obterValorAno(total, ano) {
             if (ano === "total") return total;
-            // Pesos fictícios baseados em tendências reais da pandemia para gerar o gráfico
             const pesos = { "2019": 0.18, "2020": 0.12, "2021": 0.15, "2022": 0.17, "2023": 0.20, "2024": 0.18 };
             return total * pesos[ano];
         }
 
-        // 3. FUNÇÃO PRINCIPAL: ATUALIZA TUDO
+        // 3. FUNÇÃO PRINCIPAL: ATUALIZA TUDO (COM LÓGICA DE FILTRO AVANÇADA)
         function atualizarDashboard() {
-            const localSelecionado = document.getElementById("select-local").value;
+            const filtroMacro = document.getElementById("select-local").value;
             const anoSelecionado = document.getElementById("select-ano").value;
 
             let totalMasc = 0, totalFem = 0, totalGel = 0;
             layerMarkers.clearLayers();
 
-            // Filtrar e renderizar mapa
             baseDados.forEach(item => {
-                if (localSelecionado === "todos" || localSelecionado === item.nome) {
-                    
+                let matchesFilter = false;
+                if (filtroMacro === "todos") matchesFilter = true;
+                else if (filtroMacro === "apenas_municipios" && item.categoria === "municipio") matchesFilter = true;
+                else if (filtroMacro === "apenas_instituicoes" && item.categoria === "instituicao") matchesFilter = true;
+                else if (filtroMacro === "apenas_ubs" && item.categoria === "ubs") matchesFilter = true;
+                else if (filtroMacro === item.nome) matchesFilter = true;
+
+                if (matchesFilter) {
                     let valMasc = obterValorAno(item.masculino, anoSelecionado);
                     let valFem = obterValorAno(item.feminino, anoSelecionado);
                     let valGel = obterValorAno(item.gel, anoSelecionado);
@@ -220,8 +307,11 @@
                     totalFem += valFem;
                     totalGel += valGel;
 
-                    // Adicionar Marcador no Mapa
-                    let marker = L.marker([item.lat, item.lon], { icon: redIcon }).addTo(layerMarkers);
+                    // Escolhe a cor do alfinete
+                    let iconeEscolhido = redIcon;
+                    if(item.categoria === "ubs") iconeEscolhido = blueIcon;
+
+                    let marker = L.marker([item.lat, item.lon], { icon: iconeEscolhido }).addTo(layerMarkers);
                     marker.bindPopup(`
                         <div class="popup-title">${item.nome} ${anoSelecionado !== 'total' ? '('+anoSelecionado+')' : ''}</div>
                         <b>P. Masculino:</b> ${fmt(valMasc)}<br>
@@ -229,32 +319,41 @@
                         <b>Gel:</b> ${fmt(valGel)}
                     `);
                     
-                    // Se selecionou um local específico, centraliza o mapa nele
-                    if(localSelecionado !== "todos") {
-                        map.flyTo([item.lat, item.lon], 10);
+                    // Foco individual se um local específico for selecionado
+                    if(filtroMacro === item.nome) {
+                        map.flyTo([item.lat, item.lon], 14);
                         marker.openPopup();
                     }
                 }
             });
 
-            if(localSelecionado === "todos") map.flyTo([1.5, -51.5], 6);
+            // Ajuste do Zoom Geral
+            if (filtroMacro === "todos" || filtroMacro === "apenas_municipios") map.flyTo([1.5, -51.5], 6);
+            if (filtroMacro === "apenas_instituicoes" || filtroMacro === "apenas_ubs") map.flyTo([0.0347, -51.0664], 12); // Zoom Macapá
 
-            // Atualizar KPIs (Cards na Barra Lateral)
+            // Atualizar KPIs
             document.getElementById("kpi-masc").innerText = fmt(totalMasc);
             document.getElementById("kpi-fem").innerText = fmt(totalFem);
             document.getElementById("kpi-gel").innerText = fmt(totalGel);
 
-            // Atualizar Gráfico de Série Histórica (Somente se não for um ano específico)
-            atualizarGrafico(localSelecionado);
+            // Atualizar Gráfico
+            atualizarGrafico(filtroMacro);
         }
 
-        // 4. ATUALIZAR GRÁFICO (CHART.JS)
-        function atualizarGrafico(localSelecionado) {
+        // 4. ATUALIZAR GRÁFICO
+        function atualizarGrafico(filtroMacro) {
             const anos = ["2019", "2020", "2021", "2022", "2023", "2024"];
             let dadosMasc = [0,0,0,0,0,0], dadosFem = [0,0,0,0,0,0], dadosGel = [0,0,0,0,0,0];
 
             baseDados.forEach(item => {
-                if (localSelecionado === "todos" || localSelecionado === item.nome) {
+                let matchesFilter = false;
+                if (filtroMacro === "todos") matchesFilter = true;
+                else if (filtroMacro === "apenas_municipios" && item.categoria === "municipio") matchesFilter = true;
+                else if (filtroMacro === "apenas_instituicoes" && item.categoria === "instituicao") matchesFilter = true;
+                else if (filtroMacro === "apenas_ubs" && item.categoria === "ubs") matchesFilter = true;
+                else if (filtroMacro === item.nome) matchesFilter = true;
+
+                if (matchesFilter) {
                     anos.forEach((ano, idx) => {
                         dadosMasc[idx] += obterValorAno(item.masculino, ano);
                         dadosFem[idx] += obterValorAno(item.feminino, ano);
@@ -263,9 +362,14 @@
                 }
             });
 
+            let tituloGrafico = "Estado do Amapá (Geral)";
+            if(filtroMacro === "apenas_municipios") tituloGrafico = "Apenas Municípios";
+            else if(filtroMacro === "apenas_instituicoes") tituloGrafico = "Apenas Instituições Estaduais";
+            else if(filtroMacro === "apenas_ubs") tituloGrafico = "Apenas Unidades Básicas (Macapá)";
+            else if(filtroMacro !== "todos") tituloGrafico = filtroMacro;
+
             const ctx = document.getElementById('graficoHistorico').getContext('2d');
-            
-            if (meuGrafico) meuGrafico.destroy(); // Destrói o gráfico anterior para criar o novo
+            if (meuGrafico) meuGrafico.destroy();
 
             meuGrafico = new Chart(ctx, {
                 type: 'bar',
@@ -280,17 +384,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        title: { display: true, text: `Série Histórica (2019-2024) - ${localSelecionado === 'todos' ? 'Estado do Amapá' : localSelecionado}`, font: { size: 16 } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true }
-                    }
+                    plugins: { title: { display: true, text: `Série Histórica: ${tituloGrafico}`, font: { size: 14 } } },
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
 
-        // Inicia a aplicação
         window.onload = atualizarDashboard;
     </script>
 </body>
