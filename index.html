@@ -217,33 +217,35 @@
             { "nome": "Carreta Móvel Saúde da Mulher", "lat": 0.03093354414482651, "lon": -51.05456012589178, "masculino": 1600, "feminino": 9792, "gel": 0, "categoria": "ubs" },
             { "nome": "UBS Lontra da Pedreira", "lat": 0.30163755757173505, "lon": -50.86790111169928, "masculino": 432, "feminino": 8784, "gel": 300, "categoria": "ubs" }
         ];
-        // --- CONFIGURAÇÃO DE CAMADAS DO MAPA ---
-        
-        // Camada 1: Mapa Claro (Light) - Padrão Acadêmico
+        /// 2. CONFIGURAÇÃO DAS CAMADAS DO MAPA (ACADÊMICO VS SATÉLITE)
         const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+            attribution: '&copy; CARTO'
         });
 
-        // Camada 2: Satélite (Esri World Imagery) - Alta Qualidade
-        const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{y}/{x}/{z}', {
+        const satelliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
         });
 
-        // Inicializa o mapa com a camada clara por padrão
         const map = L.map('map', {
             center: [1.5, -51.5],
             zoom: 6,
             layers: [lightMap] // Camada inicial
         });
 
-        // Adiciona o Controle de Camadas no canto superior direito
+        // Adiciona o Botão de Satélite no canto superior direito
         const baseLayers = {
-            "🗺️ Mapa Acadêmico": lightMap,
-            "🛰️ Visão Satélite": satelliteMap
+            "🗺️ Mapa Acadêmico (Padrão)": lightMap,
+            "🛰️ Visão por Satélite (Esri)": satelliteMap
         };
         L.control.layers(baseLayers, null, { position: 'topright', collapsed: false }).addTo(map);
 
-        // Ícone azul para UBSs (diferencia as unidades básicas dos municípios na visão geral)
+        // 3. CONFIGURAÇÃO DOS ÍCONES (RECUPERADOS PARA EVITAR ERRO)
+        const redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+        });
+
         const blueIcon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -253,28 +255,11 @@
         let layerMarkers = L.layerGroup().addTo(map);
         let meuGrafico = null;
 
-        // Atualização do Select para incluir a nova categoria UBS
-        const selectLocal = document.getElementById("select-local");
-        
-        // Criar os grupos dinamicamente
-        let htmlSelect = `
-            <optgroup label="--- VISÕES AGREGADAS ---">
-                <option value="todos">Estado do Amapá (Geral)</option>
-                <option value="apenas_municipios">Apenas Municípios</option>
-                <option value="apenas_instituicoes">Apenas Instituições Estaduais</option>
-                <option value="apenas_ubs">Apenas Unidades Básicas (UBS/Macapá)</option>
-            </optgroup>
-            <optgroup label="--- MUNICÍPIOS ---" id="opt-municipios"></optgroup>
-            <optgroup label="--- INSTITUIÇÕES ESTADUAIS ---" id="opt-instituicoes"></optgroup>
-            <optgroup label="--- UNIDADES DE SAÚDE (MACAPÁ) ---" id="opt-ubs"></optgroup>
-        `;
-        selectLocal.innerHTML = htmlSelect;
-
+        // Preenchimento do Select
         const optMunicipios = document.getElementById("opt-municipios");
         const optInstituicoes = document.getElementById("opt-instituicoes");
         const optUbs = document.getElementById("opt-ubs");
 
-        // Ordenar alfabeticamente para ficar profissional
         baseDados.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(local => {
             let opt = document.createElement("option");
             opt.value = local.nome;
@@ -284,17 +269,15 @@
             else optMunicipios.appendChild(opt);
         });
 
-        // Formatação Numérica
         const fmt = (num) => Math.round(num).toLocaleString('pt-BR');
 
-        // Função de Distribuição 
         function obterValorAno(total, ano) {
             if (ano === "total") return total;
             const pesos = { "2019": 0.18, "2020": 0.12, "2021": 0.15, "2022": 0.17, "2023": 0.20, "2024": 0.18 };
             return total * pesos[ano];
         }
 
-        // 3. FUNÇÃO PRINCIPAL: ATUALIZA TUDO (COM LÓGICA DE FILTRO AVANÇADA)
+        // 4. FUNÇÃO DE ATUALIZAÇÃO (RENDEIRIZA MAPA E GRÁFICOS)
         function atualizarDashboard() {
             const filtroMacro = document.getElementById("select-local").value;
             const anoSelecionado = document.getElementById("select-ano").value;
@@ -319,9 +302,7 @@
                     totalFem += valFem;
                     totalGel += valGel;
 
-                    // Escolhe a cor do alfinete
-                    let iconeEscolhido = redIcon;
-                    if(item.categoria === "ubs") iconeEscolhido = blueIcon;
+                    let iconeEscolhido = (item.categoria === "ubs") ? blueIcon : redIcon;
 
                     let marker = L.marker([item.lat, item.lon], { icon: iconeEscolhido }).addTo(layerMarkers);
                     marker.bindPopup(`
@@ -331,28 +312,24 @@
                         <b>Gel:</b> ${fmt(valGel)}
                     `);
                     
-                    // Foco individual se um local específico for selecionado
                     if(filtroMacro === item.nome) {
-                        map.flyTo([item.lat, item.lon], 14);
+                        map.flyTo([item.lat, item.lon], 16); // Zoom mais próximo no Satélite
                         marker.openPopup();
                     }
                 }
             });
 
-            // Ajuste do Zoom Geral
             if (filtroMacro === "todos" || filtroMacro === "apenas_municipios") map.flyTo([1.5, -51.5], 6);
-            if (filtroMacro === "apenas_instituicoes" || filtroMacro === "apenas_ubs") map.flyTo([0.0347, -51.0664], 12); // Zoom Macapá
+            if (filtroMacro === "apenas_instituicoes" || filtroMacro === "apenas_ubs") map.flyTo([0.0347, -51.0664], 12); 
 
-            // Atualizar KPIs
             document.getElementById("kpi-masc").innerText = fmt(totalMasc);
             document.getElementById("kpi-fem").innerText = fmt(totalFem);
             document.getElementById("kpi-gel").innerText = fmt(totalGel);
 
-            // Atualizar Gráfico
             atualizarGrafico(filtroMacro);
         }
 
-        // 4. ATUALIZAR GRÁFICO
+        // 5. ATUALIZAR GRÁFICO
         function atualizarGrafico(filtroMacro) {
             const anos = ["2019", "2020", "2021", "2022", "2023", "2024"];
             let dadosMasc = [0,0,0,0,0,0], dadosFem = [0,0,0,0,0,0], dadosGel = [0,0,0,0,0,0];
