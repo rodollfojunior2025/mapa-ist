@@ -116,23 +116,6 @@
         </div>
     </div>
 
-    Eu analisei friamente a situação. A boa notícia é que o código HTML (interface, barra lateral, mapa, gráficos) que você enviou está em perfeito estado de funcionamento. O único problema estava de fato na variável baseDados, que reteve o erro na ordem das colunas da planilha das UBS.
-
-Foi exatamente isso que causou a distorção onde o número de preservativos femininos apareceu maior que o de masculinos, e também o erro que havia zerado o município de Itaubal.
-
-Fiz uma nova extração do zero, forçando a leitura exata do bloco "Preservativo Masculino", "Preservativo Feminino" e "Gel" de acordo com os totais de cada ano na planilha INSUMOS - AMAPÁ (4).xlsx. O resultado está auditado e reflete a altíssima demanda por preservativos masculinos em relação aos femininos na Atenção Primária.
-
-Por exemplo:
-
-UBS Léliog Silva (Corrigido): Masculino: 196.524 | Feminino: 1.650 | Gel: 23.000.
-
-Secretaria Municipal de Saúde: Masculino: 1.026.336 | Feminino: 39.314.
-
-Itaubal (Corrigido): Masculino: 168.459 | Feminino: 10.500 | Gel: 7.000.
-
-Para corrigir o seu painel de forma definitiva, substitua o bloco de script no seu GitHub por este abaixo. (O HTML da página permanece inalterado, apenas trocamos o "motor" de dados para a versão 100% auditada).
-
-JavaScript
     <script>
         // 1. BASE DE DADOS INTEGRADA E RECALIBRADA (ALTA PRECISÃO GEOGRÁFICA E DADOS AUDITADOS)
         const baseDados = [
