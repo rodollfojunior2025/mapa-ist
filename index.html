@@ -18,6 +18,27 @@
         .logo-area { text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .logo-area h2 { margin: 0; color: var(--primary); font-size: 20px; }
         .logo-area p { margin: 5px 0 0; font-size: 12px; color: #777; }
+
+        /* Área de Créditos Institucionais */
+        .credits-area {
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary);
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #555;
+            line-height: 1.4;
+        }
+        .credits-area b {
+            color: var(--primary);
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 2px;
+            font-size: 11px;
+        }
+        .credits-area p { margin: 0 0 3px 0; }
+        .credits-area .inst-list { margin: 0 0 8px 0; padding-left: 0; list-style: none; }
         
         /* Controles e Filtros */
         .control-group { margin-bottom: 20px; }
@@ -60,9 +81,25 @@
     <div id="sidebar">
         <div class="logo-area">
             <h2>Insumos de prevenção às IST/HIV no Amapá</h2>
-            <p>PROFÁGUA / UNIFAP</p>
+            <p>(2019-2024)</p>
         </div>
 
+        <div class="credits-area">
+            <b>Instituições / Programas:</b>
+            <ul class="inst-list">
+                <li>¹ PROFSAÚDE / UNIFAP</li>
+                <li>² PROFÁGUA / UNIFAP</li>
+                <li>³ Universidade Federal do Amapá (UNIFAP)</li>
+                <li>⁴ SVS-AP</li>
+                <li>⁵ FAPEAP</li>
+            </ul>
+            
+            <b>Responsáveis Técnicos:</b>
+            <p><b>Orientador:</b> Prof. Dr. Rubens Alex de Oliveira Menezes</p>
+            <p><b>Coorientadora:</b> Profa. Dra. Nely Dayse Santos da Mata</p>
+            <p><b>Discente (PROFSAÚDE):</b> Vencelau Jackson da C. Pantoja</p>
+            <p><b>Discente (PROFÁGUA) / Dev:</b> Luis Rodolfo Junior</p>
+        </div>
         <div class="control-group">
             <label for="select-local">📍 Filtrar por Localidade:</label>
             <select id="select-local" onchange="atualizarDashboard()">
